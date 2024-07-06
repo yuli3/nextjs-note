@@ -19,7 +19,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import Link from 'next/link';
 
-
+import { Suspense } from 'react'
 
 
 interface Draft {
@@ -258,87 +258,89 @@ const NoteApp: React.FC = () => {
       <div className="md:container md:mx-auto z-10 w-full items-center justify-between font-mono text-sm lg:flex">
         <div className="w-full">
           <h1 className="text-2xl font-bold mb-4"><Link href="https://door.ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
-          <div className="controls space-y-2">
-            <div className="flex space-x-2 flex-wrap">
-              <Button onClick={saveDraft}>Save Draft</Button>
-              <Separator orientation="vertical" />
-              <Button onClick={handleExport}>Export</Button>
-              <Button onClick={handleImportClick}>Import</Button>
-              <Input 
-                type="file" 
-                accept=".txt" 
-                id="fileImport" 
-                onChange={handleImport} 
-                className="hidden"
-                ref={fileInputRef}
-              />
-              <Separator orientation="vertical" />
-              <Button onClick={handlePrint}>Print</Button>
-              <Button onClick={handleShareURL}>Share</Button>
-              <Separator orientation="vertical" />
-              <ModeToggle />
+          <Suspense>
+            <div className="controls space-y-2">
+              <div className="flex space-x-2 flex-wrap">
+                <Button onClick={saveDraft}>Save Draft</Button>
+                <Separator orientation="vertical" />
+                <Button onClick={handleExport}>Export</Button>
+                <Button onClick={handleImportClick}>Import</Button>
+                <Input 
+                  type="file" 
+                  accept=".txt" 
+                  id="fileImport" 
+                  onChange={handleImport} 
+                  className="hidden"
+                  ref={fileInputRef}
+                />
+                <Separator orientation="vertical" />
+                <Button onClick={handlePrint}>Print</Button>
+                <Button onClick={handleShareURL}>Share</Button>
+                <Separator orientation="vertical" />
+                <ModeToggle />
+              </div>
+              <Separator />
+              <div className="flex space-x-2 flex-wrap">
+                <Button onClick={handleUndo}>Undo</Button>
+                <Button onClick={handleRedo}>Redo</Button>
+                <Separator orientation="vertical" />
+                <Button onClick={handleCut}>Cut</Button>
+                <Button onClick={handleCopy}>Copy</Button>
+                <Button onClick={handlePaste}>Paste</Button>
+              </div>
+              <Separator />
+              <div className="flex space-x-2 flex-wrap">
+                <Select onValueChange={changeFontFamily}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Font Family" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Arial">Arial</SelectItem>
+                    <SelectItem value="Cosmic Sans MS">Cosmic Sans MS</SelectItem>
+                    <SelectItem value="Courier New">Courier New</SelectItem>
+                    <SelectItem value="Georgia">Georgia</SelectItem>
+                    <SelectItem value="Helvetica">Helvetica</SelectItem>
+                    <SelectItem value="Verdana">Verdana</SelectItem>
+                    <SelectItem value="Roboto">Roboto</SelectItem>
+                    <SelectItem value="Segoe UI">Segoe UI</SelectItem>
+                    <SelectItem value="-apple-system, BlinkMacSystemFont, system-ui">System Font</SelectItem>
+                    <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="number"
+                  value={fontSize}
+                  onChange={changeFontSize}
+                  min="8"
+                  max="24"
+                  className="w-20"
+                />
+              </div>
             </div>
-            <Separator />
-            <div className="flex space-x-2 flex-wrap">
-              <Button onClick={handleUndo}>Undo</Button>
-              <Button onClick={handleRedo}>Redo</Button>
-              <Separator orientation="vertical" />
-              <Button onClick={handleCut}>Cut</Button>
-              <Button onClick={handleCopy}>Copy</Button>
-              <Button onClick={handlePaste}>Paste</Button>
+            <Textarea
+              ref={textareaRef}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              onInput={autoResize}
+              className="w-full leading-snug overflow-hidden mt-4 min-h-[200px]"
+              style={{ fontFamily, fontSize: `${fontSize}px` }}
+            />
+            <div className="drafts mt-4">
+              <h2 className="text-xl font-semibold mb-2">Drafts</h2>
+              <div className="space-y-2">
+                {drafts.map((draft) => (
+                  <div key={draft.id} className="flex space-x-2">
+                    <Button onClick={() => loadDraft(draft)} variant="outline" className="flex-grow">
+                      Draft {truncateContent(draft.content, 15)} : {new Date(draft.id).toLocaleString()}
+                    </Button>
+                    <Button onClick={() => deleteDraft(draft.id)} variant="destructive">
+                      Delete
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
-            <Separator />
-            <div className="flex space-x-2 flex-wrap">
-              <Select onValueChange={changeFontFamily}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Font Family" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Arial">Arial</SelectItem>
-                  <SelectItem value="Cosmic Sans MS">Cosmic Sans MS</SelectItem>
-                  <SelectItem value="Courier New">Courier New</SelectItem>
-                  <SelectItem value="Georgia">Georgia</SelectItem>
-                  <SelectItem value="Helvetica">Helvetica</SelectItem>
-                  <SelectItem value="Verdana">Verdana</SelectItem>
-                  <SelectItem value="Roboto">Roboto</SelectItem>
-                  <SelectItem value="Segoe UI">Segoe UI</SelectItem>
-                  <SelectItem value="-apple-system, BlinkMacSystemFont, system-ui">System Font</SelectItem>
-                  <SelectItem value="Times New Roman">Times New Roman</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="number"
-                value={fontSize}
-                onChange={changeFontSize}
-                min="8"
-                max="24"
-                className="w-20"
-              />
-            </div>
-          </div>
-          <Textarea
-            ref={textareaRef}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            onInput={autoResize}
-            className="w-full leading-snug overflow-hidden mt-4 min-h-[200px]"
-            style={{ fontFamily, fontSize: `${fontSize}px` }}
-          />
-          <div className="drafts mt-4">
-            <h2 className="text-xl font-semibold mb-2">Drafts</h2>
-            <div className="space-y-2">
-              {drafts.map((draft) => (
-                <div key={draft.id} className="flex space-x-2">
-                  <Button onClick={() => loadDraft(draft)} variant="outline" className="flex-grow">
-                    Draft {truncateContent(draft.content, 15)} : {new Date(draft.id).toLocaleString()}
-                  </Button>
-                  <Button onClick={() => deleteDraft(draft.id)} variant="destructive">
-                    Delete
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
+          </Suspense>
         </div>
       </div>
       <section className="w-full p-12 flex justify-center items-end">
