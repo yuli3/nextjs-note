@@ -27,6 +27,38 @@ interface Draft {
   content: string;
 }
 
+const SearchParamsWrapper: React.FC<{ onNoteLoad: (note: string) => void }> = ({ onNoteLoad }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const o = searchParams.get('o');
+    if (o) {
+      const decryptedNote = decryptNote(o);
+      onNoteLoad(decryptedNote);
+    }
+  }, [searchParams, onNoteLoad]);
+
+  const updateURL = (note: string) => {
+    const encryptedNote = encryptNote(note);
+    const params = new URLSearchParams(searchParams);
+    params.set('o', encryptedNote);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  return null;
+};
+
+const encryptNote = (text: string): string => {
+  return CryptoJS.AES.encrypt(text, 'secret_key').toString();
+};
+
+const decryptNote = (encrypted: string): string => {
+  const bytes = CryptoJS.AES.decrypt(encrypted, 'secret_key');
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
+
 const NoteApp: React.FC = () => {
   const [note, setNote] = useState('');
   const [drafts, setDrafts] = useState<Draft[]>([]);
@@ -34,9 +66,6 @@ const NoteApp: React.FC = () => {
   const [fontSize, setFontSize] = useState(16);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
 
   useEffect(() => {
     // Load drafts from localStorage
@@ -54,26 +83,13 @@ const NoteApp: React.FC = () => {
     if (savedFontSize) {
       setFontSize(parseInt(savedFontSize, 10));
     }
-
-    // Check for shared note in URL
-    const o = searchParams.get('o');
-    if (o) {
-      const decryptedNote = decryptNote(o);
-      setNote(decryptedNote);
-    }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     // Save note to localStorage as user types
     localStorage.setItem('currentNote', note);
-
-    // Update URL with encrypted note
-    const encryptedNote = encryptNote(note);
-    const params = new URLSearchParams(searchParams);
-    params.set('o', encryptedNote);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
     autoResize();
-  }, [note, searchParams, pathname, router]);
+  }, [note]);
 
   const saveDraft = () => {
     const newDraft: Draft = { id: Date.now(), content: note };
@@ -93,6 +109,7 @@ const NoteApp: React.FC = () => {
     const updatedDrafts = drafts.filter(draft => draft.id !== id);
     setDrafts(updatedDrafts);
     localStorage.setItem('drafts', JSON.stringify(updatedDrafts));
+    toast('Deleted draft');
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -237,15 +254,6 @@ const NoteApp: React.FC = () => {
     localStorage.setItem('fontSize', size.toString());
   };
 
-  const encryptNote = (text: string): string => {
-    return CryptoJS.AES.encrypt(text, 'secret_key').toString();
-  };
-
-  const decryptNote = (encrypted: string): string => {
-    const bytes = CryptoJS.AES.decrypt(encrypted, 'secret_key');
-    return bytes.toString(CryptoJS.enc.Utf8);
-  };
-
   const autoResize = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -255,10 +263,15 @@ const NoteApp: React.FC = () => {
 
   return (
     <main className="md:container md:mx-auto flex min-h-screen flex-col items-center justify-between p-2">
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <SearchParamsWrapper onNoteLoad={setNote} />
+      </Suspense>
+
       <div className="md:container md:mx-auto z-10 w-full items-center justify-between font-mono text-sm lg:flex">
         <div className="w-full">
           <h1 className="text-2xl font-bold mb-4"><Link href="https://door.ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
-          <Suspense>
+
             <div className="controls space-y-2">
               <div className="flex space-x-2 flex-wrap">
                 <Button onClick={saveDraft}>Save Draft</Button>
@@ -340,7 +353,7 @@ const NoteApp: React.FC = () => {
                 ))}
               </div>
             </div>
-          </Suspense>
+
         </div>
       </div>
       <section className="w-full p-12 flex justify-center items-end">
