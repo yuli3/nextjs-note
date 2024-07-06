@@ -67,7 +67,7 @@ const NoteApp: React.FC = () => {
       const decryptedNote = decryptNote(o);
       setNote(decryptedNote);
     }
-  }, [pathname]);
+  }, [searchParams]);
 
   useEffect(() => {
     // Save note to localStorage as user types
@@ -79,7 +79,7 @@ const NoteApp: React.FC = () => {
     params.set('o', encryptedNote);
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     autoResize();
-  }, [note]);
+  }, [note, searchParams, pathname, router]);
 
   const saveDraft = () => {
     const newDraft: Draft = { id: Date.now(), content: note };
@@ -358,15 +358,15 @@ const NoteApp: React.FC = () => {
           <li><strong>Undo, Redo, Cut, Copy, Paste</strong> is not working well in some browsers like Safari. But This works well in other browsers</li>
           <li>Save Draft by clicking <strong>Save</strong> Button below. But all the drafts and auto saved works are on you local storage. So it is not shared by our web sites. But In case of malware attack on your device, do not write any privacy or important issues in this page. We do not use your cookie or local storage to run a business here.</li>
           <li>Drafts are listed below and you can add drafts, load drafts, and also delete drafts by clicking buttons</li>
-          <li>This site is made with HTML, CSS, Javascript, jQuery, Bootstrap, Cloudflare Pages.</li>
-          <li><Link href="https://door.ahoxy.com" rel="follow">https://door.ahoxy.com</Link> This is my original website that I`m working on to learn front-end programming. Feel free to report any issues in this website.</li>
+          <li>This site is made with NextJS, React, Tailwindcss, Shadcn-ui</li>
+          <li><Link href="https://door.ahoxy.com" rel="follow">https://door.ahoxy.com</Link> This is my original website that I&apos;m working on to learn front-end programming. Feel free to report any issues in this website.</li>
         </ol>
       </section>
       <Accordion type="single" collapsible className="w-full p-12">
         <AccordionItem value="item-1">
           <AccordionTrigger>About Us</AccordionTrigger>
           <AccordionContent>
-          Welcome to AHOXY NOTE, NOTE.AHOXY.com where we want to share information related to text editor. We're dedicated to providing you the very best information and knowledge of the above mentioned topics. Especially we want to serve the newest and the very best knowledge of Games, Technology, and our Reviews for the newest content.<br /> 
+          Welcome to AHOXY NOTE, NOTE.AHOXY.com where we want to share information related to text editor. We&apos;re dedicated to providing you the very best information and knowledge of the above mentioned topics. Especially we want to serve the newest and the very best knowledge of Games, Technology, and our Reviews for the newest content.<br /> 
           <br />
           We hope you found all of the information on AHOXY NOTE helpful, as we love to share them with you. If you require any more information or have any questions about our site, please feel free to contact us by email at kobasolos@icloud.com.
           </AccordionContent>
@@ -374,13 +374,13 @@ const NoteApp: React.FC = () => {
         <AccordionItem value="item-2">
           <AccordionTrigger>Disclaimer</AccordionTrigger>
           <AccordionContent>
-          If you require any more information or have any questions about our site's disclaimer, please feel free to contact us by email at kobasolos@icloud.com.<br />
+          If you require any more information or have any questions about our site&apos;s disclaimer, please feel free to contact us by email at kobasolos@icloud.com.<br />
           <br />
           Disclaimers for AHOXY NOTE<br />
           All the information on this website - https://note.ahoxy.com - is published in good faith and for general information purpose only. AHOXY NOTE does not make any warranties about the completeness, reliability and accuracy of this information. Any action you take upon the information you find on this website (AHOXY), is strictly at your own risk. AHOXY will not be liable for any losses and/or damages in connection with the use of our website.<br />
           <br />
-          From our website, you can visit other websites by following hyperlinks to such external sites. While we strive to provide only quality links to useful and ethical websites, we have no control over the content and nature of these sites. These links to other websites do not imply a recommendation for all the content found on these sites. Site owners and content may change without notice and may occur before we have the opportunity to remove a link which may have gone bad.<br />
-          Please be also aware that when you leave our website, other sites may have different privacy policies and terms which are beyond our control. Please be sure to check the Privacy Policies of these sites as well as their "Terms of Service" before engaging in any business or uploading any information.<br />
+          From our website, you can visit other websites by following hyperlinks to such external sites. While we strive to provide only quality links to useful and ethical websites, we have no control over the content and nature of these sites. These links to other websites do not imply a recommendation for all the content found on these sites. Site owners and content may change without notice and may occur before we have the opportunity to remove a link which may have gone &apos;bad&apos;.<br />
+          Please be also aware that when you leave our website, other sites may have different privacy policies and terms which are beyond our control. Please be sure to check the Privacy Policies of these sites as well as their &apos;Terms of Service&apos; before engaging in any business or uploading any information.<br />
           <br />
           Consent<br />
           By using our website, you hereby consent to our disclaimer and agree to its terms.<br />
