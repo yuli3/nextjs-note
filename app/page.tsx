@@ -29,8 +29,6 @@ interface Draft {
 
 const SearchParamsWrapper: React.FC<{ onNoteLoad: (note: string) => void }> = ({ onNoteLoad }) => {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const o = searchParams.get('o');
@@ -39,13 +37,6 @@ const SearchParamsWrapper: React.FC<{ onNoteLoad: (note: string) => void }> = ({
       onNoteLoad(decryptedNote);
     }
   }, [searchParams, onNoteLoad]);
-
-  const updateURL = (note: string) => {
-    const encryptedNote = encryptNote(note);
-    const params = new URLSearchParams(searchParams);
-    params.set('o', encryptedNote);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
 
   return null;
 };
@@ -66,6 +57,38 @@ const NoteApp: React.FC = () => {
   const [fontSize, setFontSize] = useState(16);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const updateURL = (note: string) => {
+    const encryptedNote = encryptNote(note);
+    const params = new URLSearchParams(window.location.search);
+    params.set('o', encryptedNote);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newNote = event.target.value;
+    setNote(newNote);
+    updateURL(newNote);  // Update URL whenever note changes
+  };
+
+  const handleNewButtonClick = () => {
+    if (confirm("현재 내용이 삭제 됩니다. 진행하시겠습니까?")) {
+      setNote('');
+      updateURL('');  // Clear the URL parameter `o`
+    }
+  };
+
+  useEffect(() => {
+    // Load note from URL parameter if exists
+    const params = new URLSearchParams(window.location.search);
+    const o = params.get('o');
+    if (o) {
+      const decryptedNote = decryptNote(o);
+      setNote(decryptedNote);
+    }
+  }, []);
 
   useEffect(() => {
     // Load drafts from localStorage
@@ -333,7 +356,7 @@ const NoteApp: React.FC = () => {
             <Textarea
               ref={textareaRef}
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={handleNoteChange}
               onInput={autoResize}
               className="w-full leading-snug overflow-hidden mt-4 min-h-[200px]"
               style={{ fontFamily, fontSize: `${fontSize}px` }}
