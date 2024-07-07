@@ -74,19 +74,23 @@ const NoteApp: React.FC = () => {
   };
 
   const handleNewButtonClick = () => {
-    if (confirm("현재 내용이 삭제 됩니다. 진행하시겠습니까?")) {
+    if (confirm("Are you sure to clear the work?")) {
       setNote('');
-      updateURL('');  // Clear the URL parameter `o`
+      updateURL('');
     }
   };
 
   useEffect(() => {
-    // Load note from URL parameter if exists
     const params = new URLSearchParams(window.location.search);
     const o = params.get('o');
     if (o) {
       const decryptedNote = decryptNote(o);
       setNote(decryptedNote);
+    } else {
+      const savedNote = localStorage.getItem('note');
+      if (savedNote) {
+        setNote(savedNote);
+      }
     }
   }, []);
 
@@ -285,118 +289,121 @@ const NoteApp: React.FC = () => {
   };
 
   return (
-    <main className="md:container md:mx-auto flex min-h-screen flex-col items-center justify-between p-2">
+    <Suspense>
+      <SearchParamsWrapper onNoteLoad={setNote} />
+      <main className="md:container md:mx-auto flex min-h-screen flex-col items-center justify-between p-2">
 
-      <Suspense fallback={<div>Loading...</div>}>
-        <SearchParamsWrapper onNoteLoad={setNote} />
-      </Suspense>
+          
+        
 
-      <div className="md:container md:mx-auto z-10 w-full items-center justify-between font-mono text-sm lg:flex">
-        <div className="w-full">
-          <h1 className="text-2xl font-bold mb-4"><Link href="https://door.ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
+        <div className="md:container md:mx-auto z-10 w-full items-center justify-between font-mono text-sm lg:flex">
+          <div className="w-full">
+            <h1 className="text-2xl font-bold mb-4"><Link href="https://door.ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
 
-            <div className="controls space-y-2">
-              <div className="flex space-x-2 flex-wrap">
-                <Button onClick={saveDraft}>Save Draft</Button>
-                <Separator orientation="vertical" />
-                <Button onClick={handleExport}>Export</Button>
-                <Button onClick={handleImportClick}>Import</Button>
-                <Input 
-                  type="file" 
-                  accept=".txt" 
-                  id="fileImport" 
-                  onChange={handleImport} 
-                  className="hidden"
-                  ref={fileInputRef}
-                />
-                <Separator orientation="vertical" />
-                <Button onClick={handlePrint}>Print</Button>
-                <Button onClick={handleShareURL}>Share</Button>
-                <Separator orientation="vertical" />
-                <ModeToggle />
+              <div className="controls space-y-2">
+                <div className="flex space-x-2 flex-wrap">
+                  <Button onClick={handleNewButtonClick}>New</Button>
+                  <Button onClick={saveDraft}>Save Draft</Button>
+                  <Separator orientation="vertical" />
+                  <Button onClick={handleExport}>Export</Button>
+                  <Button onClick={handleImportClick}>Import</Button>
+                  <Input 
+                    type="file" 
+                    accept=".txt" 
+                    id="fileImport" 
+                    onChange={handleImport} 
+                    className="hidden"
+                    ref={fileInputRef}
+                  />
+                  <Separator orientation="vertical" />
+                  <Button onClick={handlePrint}>Print</Button>
+                  <Button onClick={handleShareURL}>Share</Button>
+                  <Separator orientation="vertical" />
+                  <ModeToggle />
+                </div>
+                <Separator />
+                <div className="flex space-x-2 flex-wrap">
+                  <Button onClick={handleUndo}>Undo</Button>
+                  <Button onClick={handleRedo}>Redo</Button>
+                  <Separator orientation="vertical" />
+                  <Button onClick={handleCut}>Cut</Button>
+                  <Button onClick={handleCopy}>Copy</Button>
+                  <Button onClick={handlePaste}>Paste</Button>
+                </div>
+                <Separator />
+                <div className="flex space-x-2 flex-wrap">
+                  <Select onValueChange={changeFontFamily}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Font Family" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Arial">Arial</SelectItem>
+                      <SelectItem value="Cosmic Sans MS">Cosmic Sans MS</SelectItem>
+                      <SelectItem value="Courier New">Courier New</SelectItem>
+                      <SelectItem value="Georgia">Georgia</SelectItem>
+                      <SelectItem value="Helvetica">Helvetica</SelectItem>
+                      <SelectItem value="Verdana">Verdana</SelectItem>
+                      <SelectItem value="Roboto">Roboto</SelectItem>
+                      <SelectItem value="Segoe UI">Segoe UI</SelectItem>
+                      <SelectItem value="-apple-system, BlinkMacSystemFont, system-ui">System Font</SelectItem>
+                      <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="number"
+                    value={fontSize}
+                    onChange={changeFontSize}
+                    min="8"
+                    max="24"
+                    className="w-20"
+                  />
+                </div>
               </div>
-              <Separator />
-              <div className="flex space-x-2 flex-wrap">
-                <Button onClick={handleUndo}>Undo</Button>
-                <Button onClick={handleRedo}>Redo</Button>
-                <Separator orientation="vertical" />
-                <Button onClick={handleCut}>Cut</Button>
-                <Button onClick={handleCopy}>Copy</Button>
-                <Button onClick={handlePaste}>Paste</Button>
+              <Textarea
+                ref={textareaRef}
+                value={note}
+                onChange={handleNoteChange}
+                onInput={autoResize}
+                className="w-full leading-snug overflow-hidden mt-4 min-h-[200px]"
+                style={{ fontFamily, fontSize: `${fontSize}px` }}
+              />
+              <div className="drafts mt-4">
+                <h2 className="text-xl font-semibold mb-2">Drafts</h2>
+                <div className="space-y-2">
+                  {drafts.map((draft) => (
+                    <div key={draft.id} className="flex space-x-2">
+                      <Button onClick={() => loadDraft(draft)} variant="outline" className="flex-grow">
+                        Draft {truncateContent(draft.content, 15)} : {new Date(draft.id).toLocaleString()}
+                      </Button>
+                      <Button onClick={() => deleteDraft(draft.id)} variant="destructive">
+                        Delete
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <Separator />
-              <div className="flex space-x-2 flex-wrap">
-                <Select onValueChange={changeFontFamily}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Font Family" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Arial">Arial</SelectItem>
-                    <SelectItem value="Cosmic Sans MS">Cosmic Sans MS</SelectItem>
-                    <SelectItem value="Courier New">Courier New</SelectItem>
-                    <SelectItem value="Georgia">Georgia</SelectItem>
-                    <SelectItem value="Helvetica">Helvetica</SelectItem>
-                    <SelectItem value="Verdana">Verdana</SelectItem>
-                    <SelectItem value="Roboto">Roboto</SelectItem>
-                    <SelectItem value="Segoe UI">Segoe UI</SelectItem>
-                    <SelectItem value="-apple-system, BlinkMacSystemFont, system-ui">System Font</SelectItem>
-                    <SelectItem value="Times New Roman">Times New Roman</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="number"
-                  value={fontSize}
-                  onChange={changeFontSize}
-                  min="8"
-                  max="24"
-                  className="w-20"
-                />
-              </div>
-            </div>
-            <Textarea
-              ref={textareaRef}
-              value={note}
-              onChange={handleNoteChange}
-              onInput={autoResize}
-              className="w-full leading-snug overflow-hidden mt-4 min-h-[200px]"
-              style={{ fontFamily, fontSize: `${fontSize}px` }}
-            />
-            <div className="drafts mt-4">
-              <h2 className="text-xl font-semibold mb-2">Drafts</h2>
-              <div className="space-y-2">
-                {drafts.map((draft) => (
-                  <div key={draft.id} className="flex space-x-2">
-                    <Button onClick={() => loadDraft(draft)} variant="outline" className="flex-grow">
-                      Draft {truncateContent(draft.content, 15)} : {new Date(draft.id).toLocaleString()}
-                    </Button>
-                    <Button onClick={() => deleteDraft(draft.id)} variant="destructive">
-                      Delete
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
 
+          </div>
         </div>
-      </div>
-      <section className="w-full p-12 flex justify-center items-end">
-        <ol className="list-decimal">
-          <li>This page is literally for free and easy to use. This online note pad can auto save what you wrote.</li>
-          <li><strong>New</strong> button is for clearing the note pad.</li>
-          <li><strong>Import and Export</strong> buttons to open text files from your local device and to save as a text file.</li>
-          <li><strong>Print</strong> is for print. Instead of saving as a file and press print, you can just click this button.</li>
-          <li><strong>Dark Mode</strong> is for night-time use.</li>
-          <li><strong>Share</strong> Button is for sharing your work with friends. Your work is saved in URL so that anyone with this url can see what you wrote by visiting that url. And that url is saved by clicking <strong>Share</strong> Button</li>
-          <li><strong>Undo, Redo, Cut, Copy, Paste</strong> is not working well in some browsers like Safari. But This works well in other browsers</li>
-          <li>Save Draft by clicking <strong>Save</strong> Button below. But all the drafts and auto saved works are on you local storage. So it is not shared by our web sites. But In case of malware attack on your device, do not write any privacy or important issues in this page. We do not use your cookie or local storage to run a business here.</li>
-          <li>Drafts are listed below and you can add drafts, load drafts, and also delete drafts by clicking buttons</li>
-          <li>This site is made with NextJS, React, Tailwindcss, Shadcn-ui</li>
-          <li><Link href="https://door.ahoxy.com" rel="follow">https://door.ahoxy.com</Link> This is my original website that I&apos;m working on to learn front-end programming. Feel free to report any issues in this website.</li>
-        </ol>
-      </section>
+        <section className="w-full p-12 flex justify-center items-end">
+          <ol className="list-decimal">
+            <li>This page is literally for free and easy to use. This online note pad can auto save what you wrote.</li>
+            <li><strong>New</strong> button is for clearing the note pad.</li>
+            <li><strong>Import and Export</strong> buttons to open text files from your local device and to save as a text file.</li>
+            <li><strong>Print</strong> is for print. Instead of saving as a file and press print, you can just click this button.</li>
+            <li><strong>Dark Mode</strong> is for night-time use.</li>
+            <li><strong>Share</strong> Button is for sharing your work with friends. Your work is saved in URL so that anyone with this url can see what you wrote by visiting that url. And that url is saved by clicking <strong>Share</strong> Button</li>
+            <li><strong>Undo, Redo, Cut, Copy, Paste</strong> is not working well in some browsers like Safari. But This works well in other browsers</li>
+            <li>Save Draft by clicking <strong>Save</strong> Button below. But all the drafts and auto saved works are on you local storage. So it is not shared by our web sites. But In case of malware attack on your device, do not write any privacy or important issues in this page. We do not use your cookie or local storage to run a business here.</li>
+            <li>Drafts are listed below and you can add drafts, load drafts, and also delete drafts by clicking buttons</li>
+            <li>This site is made with NextJS, React, Tailwindcss, Shadcn-ui</li>
+            <li><Link href="https://door.ahoxy.com" rel="follow">https://door.ahoxy.com</Link> This is my original website that I&apos;m working on to learn front-end programming. Feel free to report any issues in this website.</li>
+          </ol>
+        </section>
 
-      <Toaster />
-    </main>
+        <Toaster />
+      </main>
+    </Suspense>
   );
 };
 
