@@ -292,13 +292,9 @@ const NoteApp: React.FC = () => {
     <Suspense>
       <SearchParamsWrapper onNoteLoad={setNote} />
       <main className="md:container md:mx-auto flex min-h-screen flex-col items-center justify-between p-2">
-
-          
-        
-
         <div className="md:container md:mx-auto z-10 w-full items-center justify-between font-mono text-sm lg:flex">
           <div className="w-full">
-            <h1 className="text-2xl font-bold mb-4"><Link href="https://door.ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
+            <h1 className="text-2xl font-bold mb-4"><Link href="https://ahoxy.com">AHOXY</Link> NOTE, Fast and Easy to use</h1>
 
               <div className="controls space-y-2">
                 <div className="flex space-x-2 flex-wrap">
@@ -397,7 +393,7 @@ const NoteApp: React.FC = () => {
             <li>Save Draft by clicking <strong>Save</strong> Button below. But all the drafts and auto saved works are on you local storage. So it is not shared by our web sites. But In case of malware attack on your device, do not write any privacy or important issues in this page. We do not use your cookie or local storage to run a business here.</li>
             <li>Drafts are listed below and you can add drafts, load drafts, and also delete drafts by clicking buttons</li>
             <li>This site is made with NextJS, React, Tailwindcss, Shadcn-ui</li>
-            <li><Link href="https://door.ahoxy.com" rel="follow">https://door.ahoxy.com</Link> This is my original website that I&apos;m working on to learn front-end programming. Feel free to report any issues in this website.</li>
+            <li><Link href="https://ahoxy.com" rel="follow">https://ahoxy.com</Link> This is my original website that I&apos;m working on to learn front-end programming. Feel free to report any issues in this website.</li>
           </ol>
         </section>
 
