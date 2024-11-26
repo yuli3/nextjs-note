@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Inter } from 'next/font/google'
+import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
+import './globals.css'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleAdSense } from "@/components/adsense";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'AHOXY Note, Online Notepad, Fast and Easy to use',
@@ -63,21 +65,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-      <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >{children}
-          </ThemeProvider></body>
-          <GoogleAnalytics gaId="G-XX3NRGH9TQ" />
-          <GoogleAdSense />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+            <NuqsAdapter>{children}</NuqsAdapter>
+            <Toaster position="bottom-right" />
+        </ThemeProvider>
+        <GoogleAnalytics gaId="G-XX3NRGH9TQ" />
+        <GoogleAdSense />
+      </body>
     </html>
-  );
+  )
 }
+
