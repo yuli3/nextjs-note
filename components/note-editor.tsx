@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useQueryState } from 'nuqs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,7 +30,7 @@ export function NoteEditor() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const textAnalysis = analyzeText(content || '')
+  const textAnalysis = useMemo(() => analyzeText(content || ''), [content])
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -126,8 +126,8 @@ export function NoteEditor() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex space-x-2">
+    <div className="space-y-6">
+      <div className="glass-toolbar">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -173,7 +173,6 @@ export function NoteEditor() {
           className="hidden"
           accept=".txt"
         />
-        
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -226,7 +225,7 @@ export function NoteEditor() {
           </Tooltip>
         </TooltipProvider> */}
       </div>
-      <div className="flex space-x-2">
+      <div className="glass-toolbar">
         <Select value={fontSize} onValueChange={setFontSize}>
           <SelectTrigger className="w-[100px]">
             <SelectValue placeholder="Select font size" />
@@ -272,35 +271,35 @@ export function NoteEditor() {
         }}
       />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Book className="w-4 h-4 text-blue-500" />
           <span>Words: {textAnalysis.wordCount}</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Type className="w-4 h-4 text-green-500" />
           <span>Characters: {textAnalysis.characterCount}</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <MessageCircle className="w-4 h-4 text-yellow-500" />
           <span>Sentences: {textAnalysis.sentenceCount}</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <AlignLeft className="w-4 h-4 text-purple-500" />
           <span>Paragraphs: {textAnalysis.paragraphCount}</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Clock className="w-4 h-4 text-red-500" />
           <span>Reading time: {textAnalysis.readingTime} min</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Twitter className="w-4 h-4 text-blue-400" />
           <span>{280 - textAnalysis.characterCount} left</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Instagram className="w-4 h-4 text-pink-500" />
           <span>{2200 - textAnalysis.characterCount} left</span>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="glass-chip">
           <Facebook className="w-4 h-4 text-blue-600" />
           <span>{63206 - textAnalysis.characterCount} left</span>
         </div>
@@ -308,4 +307,3 @@ export function NoteEditor() {
     </div>
   )
 }
-

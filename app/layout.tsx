@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
-import './globals.css'
+import './tailwind.generated.css'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleAdSense } from "@/components/adsense";
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'AHOXY Note, Online Notepad, Fast and Easy to use',
@@ -70,14 +67,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
+        <div className="liquid-background" aria-hidden />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-            <NuqsAdapter>{children}</NuqsAdapter>
+            <NuqsAdapter>
+              <div className="relative z-10 flex min-h-screen flex-col">
+                {children}
+              </div>
+            </NuqsAdapter>
             <Toaster position="bottom-right" />
         </ThemeProvider>
         <GoogleAnalytics gaId="G-XX3NRGH9TQ" />
@@ -86,4 +88,3 @@ export default function RootLayout({
     </html>
   )
 }
-
