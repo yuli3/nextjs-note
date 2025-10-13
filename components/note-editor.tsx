@@ -126,7 +126,7 @@ export function NoteEditor() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       <div className="glass-toolbar">
         <TooltipProvider>
           <Tooltip>
@@ -270,38 +270,38 @@ export function NoteEditor() {
           fontFamily: fontFamily === 'sans' ? 'sans-serif' : fontFamily === 'serif' ? 'serif' : 'monospace',
         }}
       />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <div className="glass-chip">
-          <Book className="w-4 h-4 text-blue-500" />
-          <span>Words: {textAnalysis.wordCount}</span>
+          <Book className="w-4 h-4 flex-shrink-0 text-blue-500" />
+          <span className="text-sm">Words: {textAnalysis.wordCount}</span>
         </div>
         <div className="glass-chip">
-          <Type className="w-4 h-4 text-green-500" />
-          <span>Characters: {textAnalysis.characterCount}</span>
+          <Type className="w-4 h-4 flex-shrink-0 text-green-500" />
+          <span className="text-sm">Characters: {textAnalysis.characterCount}</span>
         </div>
         <div className="glass-chip">
-          <MessageCircle className="w-4 h-4 text-yellow-500" />
-          <span>Sentences: {textAnalysis.sentenceCount}</span>
+          <MessageCircle className="w-4 h-4 flex-shrink-0 text-yellow-500" />
+          <span className="text-sm">Sentences: {textAnalysis.sentenceCount}</span>
         </div>
         <div className="glass-chip">
-          <AlignLeft className="w-4 h-4 text-purple-500" />
-          <span>Paragraphs: {textAnalysis.paragraphCount}</span>
+          <AlignLeft className="w-4 h-4 flex-shrink-0 text-purple-500" />
+          <span className="text-sm">Paragraphs: {textAnalysis.paragraphCount}</span>
         </div>
         <div className="glass-chip">
-          <Clock className="w-4 h-4 text-red-500" />
-          <span>Reading time: {textAnalysis.readingTime} min</span>
+          <Clock className="w-4 h-4 flex-shrink-0 text-red-500" />
+          <span className="text-sm">Reading time: {textAnalysis.readingTime} min</span>
         </div>
         <div className="glass-chip">
-          <Twitter className="w-4 h-4 text-blue-400" />
-          <span>{280 - textAnalysis.characterCount} left</span>
+          <Twitter className="w-4 h-4 flex-shrink-0 text-blue-400" />
+          <span className="text-sm">{280 - textAnalysis.characterCount} left</span>
         </div>
         <div className="glass-chip">
-          <Instagram className="w-4 h-4 text-pink-500" />
-          <span>{2200 - textAnalysis.characterCount} left</span>
+          <Instagram className="w-4 h-4 flex-shrink-0 text-pink-500" />
+          <span className="text-sm">{2200 - textAnalysis.characterCount} left</span>
         </div>
         <div className="glass-chip">
-          <Facebook className="w-4 h-4 text-blue-600" />
-          <span>{63206 - textAnalysis.characterCount} left</span>
+          <Facebook className="w-4 h-4 flex-shrink-0 text-blue-600" />
+          <span className="text-sm">{63206 - textAnalysis.characterCount} left</span>
         </div>
       </div>
     </div>
